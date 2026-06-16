@@ -1,5 +1,33 @@
 // Shared math macros and shortcuts for Book of Proof solutions
 
+// Drawing (for sketch exercises).
+// Pin cetz to 0.4.0 to match the version cetz-plot:0.1.2 bundles internally
+// (it does `import "@preview/cetz:0.4.0"`). Mixing a newer cetz here would make
+// draw elements incompatible with cetz-plot's pipeline (missing "bounds" key).
+#import "@preview/cetz:0.4.0": canvas, draw
+#import "@preview/cetz-plot:0.1.2": plot
+
+// School-book axes for x-y sketch exercises. `body` holds the plot.add calls
+// (a sampled series, a point list, or a parametric `t => (x, y)` for curves).
+// Integer ticks at step 1; ranges set the visible window. The plot is drawn at
+// a fixed `height` (cm) with width derived from the window's aspect ratio, so
+// 1 x-unit = 1 y-unit visually (circles stay round) and plots sit two per row.
+#let sketch(body, xrange: (-0.5, 3), yrange: (-0.5, 3), height: 3, tick-labels: false) = canvas({
+  let xwin = xrange.at(1) - xrange.at(0)
+  let ywin = yrange.at(1) - yrange.at(0)
+  let fmt = if tick-labels { auto } else { v => [] }
+  plot.plot(
+    size: (height * xwin / ywin, height),
+    axis-style: "school-book",
+    x-min: xrange.at(0), x-max: xrange.at(1),
+    y-min: yrange.at(0), y-max: yrange.at(1),
+    x-tick-step: 1, y-tick-step: 1,
+    x-format: fmt, y-format: fmt,
+    x-label: $x$, y-label: $y$,
+    body,
+  )
+})
+
 // Set notation
 #let NN = $bb(N)$   // naturals
 #let ZZ = $bb(Z)$   // integers
@@ -26,9 +54,13 @@
 #let divides = $bar$
 #let ndivides = $cancel(bar)$
 
-// Solution block: wraps a single exercise answer
+// Solution block: wraps a single exercise answer.
+// breakable: false keeps the label + an atomic plot together, so a graph that
+// doesn't fit the remaining space moves to the next column/page intact instead
+// of overflowing the bottom margin.
 #let solution(exercise, body) = block(
   width: 100%,
+  breakable: false,
   inset: (left: 1em),
   [
     #text(weight: "bold")[Exercise #exercise.]

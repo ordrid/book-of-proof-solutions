@@ -11,8 +11,15 @@
   numbering: "1",
 )
 
-#set text(font: "Linux Libertine O", size: 11pt)
+#set text(font: "New Computer Modern", size: 11pt)
+#show math.equation: set text(font: "New Computer Modern Math")
 #set math.equation(numbering: none)
+#show math.equation.where(block: true): set align(left)
+#show math.equation.where(block: true): set block(
+  above: 0.6em,
+  below: 0.6em,
+  inset: (left: 1em),
+)
 #set par(justify: true)
 
 #show heading.where(level: 1): it => {
