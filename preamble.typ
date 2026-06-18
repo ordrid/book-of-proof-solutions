@@ -63,9 +63,7 @@
   breakable: false,
   inset: (left: 1em),
   [
-    #text(weight: "bold")[Exercise #exercise.]
-    #v(0.3em)
-    #body
+    #text(weight: "bold")[#exercise.] #body
   ]
 )
 
@@ -89,6 +87,26 @@
     column-gutter: 1.5em,
     row-gutter: 0.7em,
     ..cells
+  )
+}
+
+// 4-column, column-major grid of lettered sub-parts: (a),(b),...
+// Items are in natural order a,b,c,...; grid displays them column-major
+// so (a),(b) appear in the left column, (c),(d) in the next, etc.
+#let subparts(items, ncols: 4) = {
+  let n = items.len()
+  let nrows = calc.ceil(n / ncols)
+  let alpha = "abcdefghijklmnopqrstuvwxyz".clusters()
+  let cells = ()
+  for r in range(nrows) {
+    for c in range(ncols) {
+      let i = c * nrows + r
+      if i < n { cells.push([(#alpha.at(i)) #items.at(i)]) }
+      else      { cells.push([]) }
+    }
+  }
+  pad(left: 2em, top: 0.3em, bottom: 0.5em,
+    grid(columns: range(ncols).map(_ => 1fr), row-gutter: 0.4em, ..cells)
   )
 }
 
