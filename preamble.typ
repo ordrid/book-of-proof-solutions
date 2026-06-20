@@ -62,14 +62,22 @@
   width: 100%,
   breakable: false,
   inset: (left: 1em),
-  [
-    #text(weight: "bold")[#exercise.] #body
-  ]
+  {
+    set par(justify: false)
+    [#text(weight: "bold")[#exercise.] #body]
+  }
 )
 
 // Two-column, column-major list of numbered exercise items
 // (matches the textbook's layout for a group of similar problems)
-#let exercise-list(items, start: 1) = {
+#let exercise-list(items, start: 1, ncols: 2) = {
+  if ncols == 1 {
+    let cells = ()
+    for (i, item) in items.enumerate() {
+      cells.push([*#(start + i).* #item])
+    }
+    return stack(spacing: 0.7em, ..cells)
+  }
   let n = items.len()
   let half = calc.ceil(n / 2)
   let cells = ()
@@ -112,13 +120,13 @@
 
 // A lettered group of exercises sharing one instruction
 // (e.g. "A. Write each of the following sets ... 1. ... 2. ...")
-#let exercise-group(letter, instruction, items, start: 1) = block(
+#let exercise-group(letter, instruction, items, start: 1, ncols: 2) = block(
   width: 100%,
   above: 1em,
   below: 1em,
   [
     #text(weight: "bold")[#letter.] #instruction
     #v(0.5em)
-    #exercise-list(items, start: start)
+    #exercise-list(items, start: start, ncols: ncols)
   ]
 )
